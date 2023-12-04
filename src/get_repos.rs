@@ -38,7 +38,7 @@ pub async fn get_repos(mut user: String, auth_key: String) -> Vec<Repo> {
     let request_url = format!(
         "https://api.github.com/user/repos?visibility=all",
     );
-    println!("{}", request_url);
+    // println!("{}", request_url);
 
     let auth_header = format!("Bearer {}", auth_key);
 
@@ -58,7 +58,7 @@ pub async fn get_repos(mut user: String, auth_key: String) -> Vec<Repo> {
         reqwest::header::HeaderValue::from_bytes(auth_header.as_bytes()).unwrap()
     );
 
-    println!("{:?}", headers);
+    // println!("{:?}", headers);
 
     // create reqwest client object
     let client = match reqwest::Client::builder().default_headers(headers).build() {
