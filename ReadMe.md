@@ -2,6 +2,7 @@
 
 #### Settings.toml
 ```toml
+github_user = "helloimalemur"
 github_personal_access_token = "github_xxxxx"
 ```
 
