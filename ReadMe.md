@@ -12,3 +12,4 @@ github_personal_access_token = "github_xxxxx"
     https://virtualapi.checkoutchamp.com/leads/import/?loginId=v2devapi&password=v2devapi&campaignId=344&firstName=James&lastName=Koonts&emailAddress=test@me.com
     https://rust-lang-nursery.github.io/rust-cookbook/web/clients/apis.html
     https://rcos.io/static/internal_docs/reqwest/struct.ClientBuilder.html
+    https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repositories-for-the-authenticated-user
