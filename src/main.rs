@@ -1,15 +1,12 @@
 extern crate core;
 
-use std::borrow::Borrow;
-use std::{env, thread};
-use std::collections::HashMap;
-use std::time::Duration;
 use config::Config;
+use std::collections::HashMap;
+use std::env;
+use std::time::Duration;
 
 mod get_repos;
 use get_repos::get_repos;
-use crate::get_repos::{Repo, RepoText};
-
 
 #[tokio::main]
 async fn main() {
@@ -17,14 +14,15 @@ async fn main() {
         .add_source(config::File::with_name("config/Settings"))
         .build()
         .unwrap();
-    let settings_map = config.try_deserialize::<HashMap<String, String>>()
-        .unwrap();
+    let settings_map = config.try_deserialize::<HashMap<String, String>>().unwrap();
 
-    let args: Vec<String> = env::args().collect();
+    let _args: Vec<String> = env::args().collect();
 
     let user = "helloimalemur".to_string();
-    let auth_key = settings_map.get("github_personal_access_token").unwrap().to_string();
-    let mut repos: Vec<Repo> = Vec::new();
+    let auth_key = settings_map
+        .get("github_personal_access_token")
+        .unwrap()
+        .to_string();
 
     //TODO: params / options
     // if no command line input, fallback on config file input, panic if neither are present
@@ -42,5 +40,4 @@ async fn main() {
         tokio::time::sleep(Duration::from_secs(2)).await;
     }
     pb.finish_with_message("done");
-
 }

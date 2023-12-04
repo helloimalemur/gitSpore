@@ -1,17 +1,5 @@
-// https://maxuuell.com/blog/how-to-concatenate-strings-in-rust
-// https://docs.github.com/en/rest/guides/basics-of-authentication?apiVersion=2022-11-28
-// https://docs.github.com/en/rest?apiVersion=2022-11-28
-// https://virtualapi.checkoutchamp.com/leads/import/?loginId=v2devapi&password=v2devapi&campaignId=344&firstName=James&lastName=Koonts&emailAddress=test@me.com
-// https://rust-lang-nursery.github.io/rust-cookbook/web/clients/apis.html
-// https://rcos.io/static/internal_docs/reqwest/struct.ClientBuilder.html
 use reqwest::header::HeaderMap;
 use serde::*;
-use serde_json;
-use std::{env, process, thread};
-use std::io::Read;
-use std::time::Duration;
-use serde_json::Value;
-
 
 #[derive(Deserialize, Debug)]
 // struct to match on JSON reponse
@@ -23,25 +11,25 @@ pub struct Repo {
 
 pub trait RepoText {
     fn get_repo_text(repo: Repo) -> String;
+    fn get_repo_id(repo: Repo) -> i32;
 }
 
 impl RepoText for Repo {
     fn get_repo_text(repo: Repo) -> String {
-        return repo.name
+        repo.name
     }
 
+    fn get_repo_id(repo: Repo) -> i32 {
+        repo.id
+    }
 }
 
-pub async fn get_repos(mut user: String, auth_key: String) -> Vec<Repo> {
-
+pub async fn get_repos(_user: String, auth_key: String) -> Vec<Repo> {
     // set request url
-    let request_url = format!(
-        "https://api.github.com/user/repos?visibility=all",
-    );
+    let request_url = "https://api.github.com/user/repos?visibility=all".to_string();
     // println!("{}", request_url);
 
     let auth_header = format!("Bearer {}", auth_key);
-
 
     //set headers
     let mut headers: HeaderMap = reqwest::header::HeaderMap::new();
@@ -51,11 +39,11 @@ pub async fn get_repos(mut user: String, auth_key: String) -> Vec<Repo> {
     );
     headers.insert(
         reqwest::header::ACCEPT,
-        reqwest::header::HeaderValue::from_static("application/vnd.github+json")
+        reqwest::header::HeaderValue::from_static("application/vnd.github+json"),
     );
     headers.insert(
         reqwest::header::AUTHORIZATION,
-        reqwest::header::HeaderValue::from_bytes(auth_header.as_bytes()).unwrap()
+        reqwest::header::HeaderValue::from_bytes(auth_header.as_bytes()).unwrap(),
     );
 
     // println!("{:?}", headers);
@@ -68,8 +56,7 @@ pub async fn get_repos(mut user: String, auth_key: String) -> Vec<Repo> {
     // println!("{:?}", client);
 
     // get response
-    let response = match client.get(&request_url)
-        .send().await {
+    let response = match client.get(&request_url).send().await {
         Ok(t) => t,
         Err(_e) => std::process::exit(2),
     };
@@ -78,15 +65,15 @@ pub async fn get_repos(mut user: String, auth_key: String) -> Vec<Repo> {
     //handle response
     let response_text = match response.text().await {
         Ok(ok) => ok,
-        Err(err) => panic!("error handling response")
+        Err(_err) => panic!("error handling response"),
     };
     // println!("{:?}", response_text);
 
     let repos: Vec<Repo> = match serde_json::from_str(response_text.clone().as_ref()) {
         Ok(r) => r,
-        Err(e) => panic!("{}", response_text)
+        Err(_e) => panic!("{}", response_text),
     };
 
     // println!("{:?}", repos);
-    return repos;
+    repos
 }
