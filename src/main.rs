@@ -32,7 +32,7 @@ async fn main() {
 
     // print stargazers for each repo, sleeping 2s between repo
     for (int, repo) in get_repos(user, auth_key).await.iter().enumerate() {
-        println!("{:?}", repo);
+        println!("{}", repo.html_url);
 
         tokio::time::sleep(Duration::from_secs(2)).await;
 

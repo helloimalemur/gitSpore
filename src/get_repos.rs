@@ -16,9 +16,9 @@ use serde_json::Value;
 #[derive(Deserialize, Debug)]
 // struct to match on JSON reponse
 pub struct Repo {
-    name: String,
-    id: i32,
-    html_url: String,
+    pub(crate) name: String,
+    pub(crate) id: i32,
+    pub(crate) html_url: String,
 }
 
 pub trait RepoText {
