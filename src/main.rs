@@ -30,13 +30,17 @@ async fn main() {
     // if no command line input, fallback on config file input, panic if neither are present
     // statically set username and output folder for now
 
+    let user_repos = get_repos(user, auth_key).await;
+    let pb = indicatif::ProgressBar::new(user_repos.len() as u64);
     // print stargazers for each repo, sleeping 2s between repo
-    for (int, repo) in get_repos(user, auth_key).await.iter().enumerate() {
+    for (int, repo) in user_repos.iter().enumerate() {
         println!("{}", repo.html_url);
 
         tokio::time::sleep(Duration::from_secs(2)).await;
-
+        pb.println(format!("[+] finished #{}", int));
+        pb.inc(1);
         // TODO: download repo to desired location
     }
+    pb.finish_with_message("done");
 
 }
