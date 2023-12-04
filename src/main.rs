@@ -1,8 +1,10 @@
 extern crate core;
 
 use std::borrow::Borrow;
-use std::thread;
+use std::{env, thread};
+use std::collections::HashMap;
 use std::time::Duration;
+use config::Config;
 
 mod get_repos;
 use get_repos::get_repos;
@@ -11,13 +13,25 @@ use crate::get_repos::{Repo, RepoText};
 
 #[tokio::main]
 async fn main() {
-    let user = "helloimalemur";
+    let config = Config::builder()
+        .add_source(config::File::with_name("config/Settings"))
+        .build()
+        .unwrap();
+    let settings_map = config.try_deserialize::<HashMap<String, String>>()
+        .unwrap();
+
+    let args: Vec<String> = env::args().collect();
+
+    let user = "helloimalemur".to_string();
+    let auth_key = settings_map.get("github_personal_access_token").unwrap().to_string();
     let mut repos: Vec<Repo> = Vec::new();
 
     //TODO: params / options
+    // if no command line input, fallback on config file input, panic if neither are present
+    // statically set username and output folder for now
 
     // print stargazers for each repo, sleeping 2s between repo
-    for (int, repo) in get_repos(user).await.iter().enumerate() {
+    for (int, repo) in get_repos(user, auth_key).await.iter().enumerate() {
         println!("{:?}", repo);
 
         tokio::time::sleep(Duration::from_secs(2)).await;

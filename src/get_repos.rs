@@ -8,6 +8,7 @@ use reqwest::header::HeaderMap;
 use serde::*;
 use serde_json;
 use std::{env, process, thread};
+use std::io::Read;
 use std::time::Duration;
 use serde_json::Value;
 
@@ -31,7 +32,7 @@ impl RepoText for Repo {
 
 }
 
-pub async fn get_repos(mut user: &str) -> Vec<Repo> {
+pub async fn get_repos(mut user: String, auth_key: String) -> Vec<Repo> {
 
     // set request url
     let request_url = format!(
@@ -40,12 +41,22 @@ pub async fn get_repos(mut user: &str) -> Vec<Repo> {
     );
     println!("{}", request_url);
 
+    let auth_header = format!("Authorization: Bearer {}", auth_key);
+
+
     //set headers
     let mut headers: HeaderMap = reqwest::header::HeaderMap::new();
     headers.insert(
         reqwest::header::USER_AGENT,
         reqwest::header::HeaderValue::from_static("User-Agent: Awesome-Octocat-App"),
     );
+    headers.insert(
+        reqwest::header::AUTHORIZATION,
+        reqwest::header::HeaderValue::from_bytes(auth_header.as_bytes()).unwrap()
+    );
+
+    println!("{:?}", headers);
+
     // create reqwest client object
     let client = match reqwest::Client::builder().default_headers(headers).build() {
         Ok(k) => k,
