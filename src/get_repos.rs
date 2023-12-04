@@ -36,7 +36,7 @@ pub async fn get_repos(mut user: String, auth_key: String) -> Vec<Repo> {
 
     // set request url
     let request_url = format!(
-        "https://api.github.com/user/repos",
+        "https://api.github.com/user/repos?visibility=all",
     );
     println!("{}", request_url);
 
