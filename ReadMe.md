@@ -1,5 +1,10 @@
 # gitSpore
 
+#### Settings.toml
+```toml
+github_personal_access_token = "github_xxxxx"
+```
+
 ###
     https://maxuuell.com/blog/how-to-concatenate-strings-in-rust
     https://docs.github.com/en/rest/guides/basics-of-authentication?apiVersion=2022-11-28
