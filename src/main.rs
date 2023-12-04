@@ -35,11 +35,11 @@ async fn main() {
     // print stargazers for each repo, sleeping 2s between repo
     for (int, repo) in user_repos.iter().enumerate() {
         println!("{}", repo.html_url);
-
-        tokio::time::sleep(Duration::from_secs(2)).await;
+        // TODO: download repo to desired location
         pb.println(format!("[+] finished #{}", int));
         pb.inc(1);
-        // TODO: download repo to desired location
+
+        tokio::time::sleep(Duration::from_secs(2)).await;
     }
     pb.finish_with_message("done");
 
