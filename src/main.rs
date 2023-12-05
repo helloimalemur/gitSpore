@@ -7,6 +7,7 @@ use std::time::Duration;
 
 mod get_repos;
 use get_repos::get_repos;
+use crate::get_repos::download_repo;
 
 #[tokio::main]
 async fn main() {
@@ -65,17 +66,15 @@ async fn main() {
         token
     ).await;
 
-    let pb = indicatif::ProgressBar::new(user_repos.len() as u64);
+    // let pb = indicatif::ProgressBar::new(user_repos.len() as u64);
 
     // each repo, sleeping 1s between repo
     for (int, repo) in user_repos.iter().enumerate() {
-
-        println!("{}", repo.html_url);
-        pb.println(format!("[+] #{}/{}", int, user_repos.len()));
-        pb.inc(1);
-
-        tokio::time::sleep(Duration::from_secs(2)).await;
+        println!("{}", repo.clone().html_url);
+        download_repo(String::from(repo.html_url.as_str()), String::from(output), String::from(token));
+        // pb.println(format!("[+] #{}/{}", int, user_repos.len()));
+        // pb.inc(1);
+        tokio::time::sleep(Duration::from_millis(300)).await;
     }
-
-    pb.finish_with_message("done");
+    // pb.finish_with_message("done");
 }

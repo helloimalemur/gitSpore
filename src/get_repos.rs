@@ -1,3 +1,7 @@
+use std::{process, thread};
+use std::io::Read;
+use std::process::Stdio;
+use git2::Repository;
 use reqwest::header::HeaderMap;
 use serde::*;
 
@@ -76,4 +80,32 @@ pub async fn get_repos(_user: &String, auth_key: &String) -> Vec<Repo> {
 
     // println!("{:?}", repos);
     repos
+}
+
+pub fn download_repo(repo_url: String, output_path: String, token: String) {
+    let repo_name = repo_url.split("/").last().unwrap();
+    let final_output_path = format!("{}{}/", output_path, repo_name);
+
+    let git_addr = repo_url.split("://").last().unwrap();
+
+    let git_command = format!("https://oauth2:{}@{}", token, git_addr);
+    println!("{}", git_command);
+
+    thread::spawn(move || {
+        // let result = Repository::clone(repo_url.as_str(), final_output_path);
+        let mut result_string = String::new();
+        let result = process::Command::new("git")
+            .arg("clone")
+            .arg(git_command)
+            .arg(final_output_path)
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap().stdout.unwrap().read_to_string(&mut result_string);
+
+        if result.is_ok() {
+            println!("SUCCESS")
+        } else {
+            println!("FAILURE")
+        }
+    });
 }
