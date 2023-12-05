@@ -73,7 +73,7 @@ async fn main() {
 
     // each repo, sleeping 1s between repo
     for (int, repo) in user_repos.iter().enumerate() {
-        println!("{}", repo.clone().html_url);
+        // println!("{}", repo.clone().html_url);
         let handle = download_repo(String::from(repo.html_url.as_str()), String::from(output), String::from(token));
         handles.push(handle);
         // pb.println(format!("[+] #{}/{}", int, user_repos.len()));

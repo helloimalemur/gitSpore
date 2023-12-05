@@ -97,16 +97,22 @@ pub fn download_repo(repo_url: String, output_path: String, token: String) -> Jo
         let mut result_string = String::new();
         let result = process::Command::new("git")
             .arg("clone")
+            .arg("--quiet")
             .arg(git_command)
-            .arg(final_output_path)
+            .arg(final_output_path.clone())
             .stdout(Stdio::piped())
-            .spawn()
-            .unwrap().stdout.unwrap().read_to_string(&mut result_string);
+            .stderr(Stdio::piped())
+            // .spawn();
+            .spawn().unwrap();
 
-        if result.is_ok() {
-            println!("SUCCESS: {}", repo_name_bind)
+        let error = result.stderr.unwrap().read_to_string(&mut result_string).unwrap();
+        let out = result.stdout.unwrap().read_to_string(&mut result_string).unwrap();
+
+
+        if error > 0 {
+            println!("FAILURE: {:?}", result_string)
         } else {
-            println!("FAILURE: {}", repo_name_bind)
+            println!("SUCCESS: {:?}", final_output_path)
         }
     });
     handle
