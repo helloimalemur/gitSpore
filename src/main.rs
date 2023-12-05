@@ -3,6 +3,7 @@ extern crate core;
 use config::Config;
 use std::collections::HashMap;
 use std::env;
+use std::thread::JoinHandle;
 use std::time::Duration;
 
 mod get_repos;
@@ -68,13 +69,20 @@ async fn main() {
 
     // let pb = indicatif::ProgressBar::new(user_repos.len() as u64);
 
+    let mut handles: Vec<JoinHandle<()>> = vec![];
+
     // each repo, sleeping 1s between repo
     for (int, repo) in user_repos.iter().enumerate() {
         println!("{}", repo.clone().html_url);
-        download_repo(String::from(repo.html_url.as_str()), String::from(output), String::from(token));
+        let handle = download_repo(String::from(repo.html_url.as_str()), String::from(output), String::from(token));
+        handles.push(handle);
         // pb.println(format!("[+] #{}/{}", int, user_repos.len()));
         // pb.inc(1);
         tokio::time::sleep(Duration::from_millis(300)).await;
     }
-    // pb.finish_with_message("done");
+
+    // clean up handles
+    for handle in handles {
+        handle.join().unwrap()
+    }
 }
