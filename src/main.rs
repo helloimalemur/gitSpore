@@ -7,8 +7,8 @@ use std::thread::JoinHandle;
 use std::time::Duration;
 
 mod get_repos;
-use get_repos::get_repos;
 use crate::get_repos::download_repo;
+use get_repos::get_repos;
 
 #[tokio::main]
 async fn main() {
@@ -62,10 +62,7 @@ async fn main() {
 
     println!("User: {}\nOutput Path: {}\n", user, output);
 
-    let user_repos = get_repos(
-        user,
-        token
-    ).await;
+    let user_repos = get_repos(user, token).await;
 
     // let pb = indicatif::ProgressBar::new(user_repos.len() as u64);
 
@@ -74,7 +71,11 @@ async fn main() {
     // each repo, sleeping 1s between repo
     for (int, repo) in user_repos.iter().enumerate() {
         // println!("{}", repo.clone().html_url);
-        let handle = download_repo(String::from(repo.html_url.as_str()), String::from(output), String::from(token));
+        let handle = download_repo(
+            String::from(repo.html_url.as_str()),
+            String::from(output),
+            String::from(token),
+        );
         handles.push(handle);
         // pb.println(format!("[+] #{}/{}", int, user_repos.len()));
         // pb.inc(1);

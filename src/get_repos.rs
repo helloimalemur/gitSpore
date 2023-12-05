@@ -1,10 +1,10 @@
-use std::{process, thread};
-use std::io::Read;
-use std::process::Stdio;
-use std::thread::JoinHandle;
 use git2::Repository;
 use reqwest::header::HeaderMap;
 use serde::*;
+use std::io::Read;
+use std::process::Stdio;
+use std::thread::JoinHandle;
+use std::{process, thread};
 
 #[derive(Deserialize, Debug)]
 // struct to match on JSON reponse
@@ -103,11 +103,19 @@ pub fn download_repo(repo_url: String, output_path: String, token: String) -> Jo
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             // .spawn();
-            .spawn().unwrap();
+            .spawn()
+            .unwrap();
 
-        let error = result.stderr.unwrap().read_to_string(&mut result_string).unwrap();
-        let out = result.stdout.unwrap().read_to_string(&mut result_string).unwrap();
-
+        let error = result
+            .stderr
+            .unwrap()
+            .read_to_string(&mut result_string)
+            .unwrap();
+        let out = result
+            .stdout
+            .unwrap()
+            .read_to_string(&mut result_string)
+            .unwrap();
 
         if error > 0 {
             println!("FAILURE: {:?}", result_string)
