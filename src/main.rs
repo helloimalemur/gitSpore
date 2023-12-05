@@ -60,25 +60,22 @@ async fn main() {
 
     println!("User: {}\nOutput Path: {}\n", user, output);
 
-    //TODO: params / options
-    // if no command line input, fallback on config file input, panic if neither are present
-    // statically set username and output folder for now
-
     let user_repos = get_repos(
         user,
         token
     ).await;
 
-
     let pb = indicatif::ProgressBar::new(user_repos.len() as u64);
-    // print stargazers for each repo, sleeping 2s between repo
+
+    // each repo, sleeping 1s between repo
     for (int, repo) in user_repos.iter().enumerate() {
+
         println!("{}", repo.html_url);
-        // TODO: download repo to desired location
-        pb.println(format!("[+] finished #{}", int));
+        pb.println(format!("[+] #{}/{}", int, user_repos.len()));
         pb.inc(1);
 
         tokio::time::sleep(Duration::from_secs(2)).await;
     }
+
     pb.finish_with_message("done");
 }
