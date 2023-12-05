@@ -24,7 +24,7 @@ impl RepoText for Repo {
     }
 }
 
-pub async fn get_repos(_user: String, auth_key: String) -> Vec<Repo> {
+pub async fn get_repos(_user: &String, auth_key: &String) -> Vec<Repo> {
     // set request url
     let request_url = "https://api.github.com/user/repos?visibility=all".to_string();
     // println!("{}", request_url);

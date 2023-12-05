@@ -1,8 +1,11 @@
 # gitSpore
+    gitspore <user>
+    gitspore <user> <output-folder>
+    gitspore <user> <output-folder> <token>
 
 #### Settings.toml
 ```toml
-github_user = "helloimalemur"
+github_username = "helloimalemur"
 github_personal_access_token = "github_xxxxx"
 ```
 
