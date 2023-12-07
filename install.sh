@@ -14,6 +14,7 @@ cargo build --release
 
 ## copy binary and host_list.txt to install dir
 cp target/release/gitspore /var/lib/gitspore/gitspore
+cp -r config/ /var/lib/gitspore/
 cp -r run.sh /var/lib/gitspore/
 
 
