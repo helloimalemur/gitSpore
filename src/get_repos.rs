@@ -1,4 +1,3 @@
-use git2::Repository;
 use reqwest::header::HeaderMap;
 use serde::*;
 use std::io::Read;
@@ -29,7 +28,7 @@ impl RepoText for Repo {
     }
 }
 
-pub async fn get_repos(_user: &String, auth_key: &String) -> Vec<Repo> {
+pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
     // set request url
     let request_url = "https://api.github.com/user/repos?visibility=all".to_string();
     // println!("{}", request_url);
@@ -84,14 +83,14 @@ pub async fn get_repos(_user: &String, auth_key: &String) -> Vec<Repo> {
 }
 
 pub fn download_repo(repo_url: String, output_path: String, token: String) -> JoinHandle<()> {
-    let repo_name = repo_url.split("/").last().unwrap();
-    let final_output_path = format!("{}{}/", output_path, repo_name.clone());
+    let repo_name = repo_url.split('/').last().unwrap();
+    let final_output_path = format!("{}{}/", output_path, repo_name);
 
     let git_addr = repo_url.split("://").last().unwrap();
 
     let git_command = format!("https://oauth2:{}@{}", token, git_addr);
     // println!("{}", git_command);
-    let repo_name_bind = repo_name.clone().to_string();
+    let _repo_name_bind = repo_name.to_string();
     let handle = thread::spawn(move || {
         // let result = Repository::clone(repo_url.as_str(), final_output_path);
         let mut result_string = String::new();
@@ -111,7 +110,7 @@ pub fn download_repo(repo_url: String, output_path: String, token: String) -> Jo
             .unwrap()
             .read_to_string(&mut result_string)
             .unwrap();
-        let out = result
+        let _out = result
             .stdout
             .unwrap()
             .read_to_string(&mut result_string)

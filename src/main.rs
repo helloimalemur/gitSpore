@@ -13,18 +13,15 @@ use get_repos::get_repos;
 #[tokio::main]
 async fn main() {
     let mut settings_map = HashMap::<String, String>::new();
-    let mut user_arg = String::new();
-    let mut output_path_arg = String::new();
-    let mut github_token_arg = String::new();
 
     let args: Vec<String> = env::args().collect();
     match args.len() {
         4 => {
-            user_arg = String::from(args.get(1).unwrap());
+            let user_arg = String::from(args.get(1).unwrap());
             settings_map.insert("user".to_string(), user_arg.clone());
-            output_path_arg = String::from(args.get(2).unwrap());
+            let output_path_arg = String::from(args.get(2).unwrap());
             settings_map.insert("output".to_string(), output_path_arg.clone());
-            github_token_arg = String::from(args.get(3).unwrap());
+            let github_token_arg = String::from(args.get(3).unwrap());
             settings_map.insert("token".to_string(), github_token_arg.clone());
         }
         _ => load_from_config_file(&mut settings_map),
@@ -69,7 +66,7 @@ async fn main() {
     let mut handles: Vec<JoinHandle<()>> = vec![];
 
     // each repo, sleeping 1s between repo
-    for (int, repo) in user_repos.iter().enumerate() {
+    for (_int, repo) in user_repos.iter().enumerate() {
         // println!("{}", repo.clone().html_url);
         let handle = download_repo(
             String::from(repo.html_url.as_str()),
