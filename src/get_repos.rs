@@ -29,9 +29,9 @@ impl RepoText for Repo {
 }
 
 pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
-    // set request url
-    let request_url = "https://api.github.com/user/repos?visibility=all".to_string();
-    // println!("{}", request_url);
+    // set gitsporest url
+    let gitsporest_url = "https://api.github.com/user/repos?visibility=all".to_string();
+    // println!("{}", gitsporest_url);
 
     let auth_header = format!("Bearer {}", auth_key);
 
@@ -60,7 +60,7 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
     // println!("{:?}", client);
 
     // get response
-    let response = match client.get(&request_url).send().await {
+    let response = match client.get(&gitsporest_url).send().await {
         Ok(t) => t,
         Err(_e) => std::process::exit(2),
     };

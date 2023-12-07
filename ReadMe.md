@@ -13,6 +13,6 @@ github_personal_access_token = "github_xxxxx"
 ```
 
 ## Development and Collaboration
-#### Feel free to open a pull request, please run the following prior to your submission please!
+#### Feel free to open a pull gitsporest, please run the following prior to your submission please!
     echo "Run clippy"; cargo clippy -- -D clippy::all
     echo "Format source code"; cargo fmt -- --check
