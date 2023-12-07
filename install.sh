@@ -6,7 +6,6 @@ if [[ -f /etc/systemd/system/gitspore.service ]]; then systemctl stop gitspore; 
 ## erase install folder and recreate it
 rm -rf /var/lib/gitspore/
 mkdir /var/lib/gitspore/
-mkdir /var/lib/gitspore/output/
 SERVICE_USER=$(cat config/Settings.toml | grep service_user | cut -d ' ' -f 3 | sed 's/\"//g')
 chown -R "$SERVICE_USER":"$SERVICE_USER" /var/lib/gitspore/
 
@@ -15,7 +14,6 @@ cargo build --release
 
 ## copy binary and host_list.txt to install dir
 cp target/release/gitspore /var/lib/gitspore/gitspore
-cp -r config/ /var/lib/gitspore/
 cp -r run.sh /var/lib/gitspore/
 
 
