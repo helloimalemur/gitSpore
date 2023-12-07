@@ -1,4 +1,5 @@
 # gitSpore
+Github backup tool that concurrently downloads all public and private github repo's of the specified user.
 
 ## Running gitSpore from cli
     gitspore <user> <output-folder> <token>
