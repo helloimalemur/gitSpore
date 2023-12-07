@@ -1,18 +1,17 @@
 # gitSpore
+
+## Running gitSpore from cli
     gitspore <user> <output-folder> <token>
 
-#### Settings.toml
+## Running gitSpore from config file
+#### config/Settings.toml
 ```toml
 github_username = "helloimalemur"
 output_folder = "/tmp/"
 github_personal_access_token = "github_xxxxx"
 ```
 
-###
-    https://maxuuell.com/blog/how-to-concatenate-strings-in-rust
-    https://docs.github.com/en/rest/guides/basics-of-authentication?apiVersion=2022-11-28
-    https://docs.github.com/en/rest?apiVersion=2022-11-28
-    https://virtualapi.checkoutchamp.com/leads/import/?loginId=v2devapi&password=v2devapi&campaignId=344&firstName=James&lastName=Koonts&emailAddress=test@me.com
-    https://rust-lang-nursery.github.io/rust-cookbook/web/clients/apis.html
-    https://rcos.io/static/internal_docs/reqwest/struct.ClientBuilder.html
-    https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repositories-for-the-authenticated-user
+## Development and Collaboration
+#### Feel free to open a pull request, please run the following prior to your submission please!
+    echo "Run clippy"; cargo clippy -- -D clippy::all
+    echo "Format source code"; cargo fmt -- --check
