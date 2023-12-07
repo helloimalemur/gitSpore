@@ -6,7 +6,7 @@ if [[ -f /etc/systemd/system/gitspore.service ]]; then systemctl stop gitspore; 
 ## erase install folder and recreate it
 rm -rf /var/lib/gitspore/
 mkdir /var/lib/gitspore/
-SERVICE_USER=$(cat config/Settings.toml | grep service_user | cut -d ' ' -f 3 | sed 's/\"//g')
+SERVICE_USER=$(cat config/Service.toml | grep service_user | cut -d ' ' -f 3 | sed 's/\"//g')
 chown -R "$SERVICE_USER":"$SERVICE_USER" /var/lib/gitspore/
 
 ## run bulid
