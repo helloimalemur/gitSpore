@@ -4,6 +4,7 @@ use std::io::Read;
 use std::process::Stdio;
 use std::thread::JoinHandle;
 use std::{process, thread};
+use std::fmt::format;
 
 #[derive(Deserialize, Debug)]
 // struct to match on JSON reponse
@@ -52,31 +53,58 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
 
     // println!("{:?}", headers);
 
-    // create reqwest client object
-    let client = match reqwest::Client::builder().default_headers(headers).build() {
-        Ok(k) => k,
-        Err(_e) => std::process::exit(2),
-    };
-    // println!("{:?}", client);
+    let mut pagination: bool = true;
+    let mut git_url = String::new();
+    let mut repos: Vec<Repo> = vec![];
+    let mut page: i32 = 1;
+    let mut check_header = String::new();
+    git_url = String::from(&gitsporest_url);
 
-    // get response
-    let response = match client.get(&gitsporest_url).send().await {
-        Ok(t) => t,
-        Err(_e) => std::process::exit(2),
-    };
-    // println!("{:?}", response);
 
-    //handle response
-    let response_text = match response.text().await {
-        Ok(ok) => ok,
-        Err(_err) => panic!("error handling response"),
-    };
-    // println!("{:?}", response_text);
+    while pagination {
+        // create reqwest client object
+        let client = match reqwest::Client::builder().default_headers(headers.clone()).build() {
+            Ok(k) => k,
+            Err(_e) => std::process::exit(2),
+        };
+        // println!("{:?}", client);
 
-    let repos: Vec<Repo> = match serde_json::from_str(response_text.clone().as_ref()) {
-        Ok(r) => r,
-        Err(_e) => panic!("{}", response_text),
-    };
+        // get response
+        let response = match client.get(&git_url).send().await {
+            Ok(t) => t,
+            Err(_e) => std::process::exit(2),
+        };
+        // println!("{:?}", response);
+
+        if response.headers().contains_key("link") {
+            let new_header = response.headers().get("link").unwrap().to_str().unwrap().to_string();
+            if check_header == new_header {
+                pagination = false;
+            }
+            check_header = new_header;
+            page += 1;
+            let page_param = format!("&page={}", page);
+            git_url = format!("{gitsporest_url}{page_param}");
+        }
+
+        //handle response
+        let response_text = match response.text().await {
+            Ok(ok) => ok,
+            Err(_err) => panic!("error handling response"),
+        };
+        // println!("{:?}", response_text);
+
+        let new_repos: Vec<Repo> = match serde_json::from_str(response_text.clone().as_ref()) {
+            Ok(r) => r,
+            Err(_e) => panic!("{}", response_text),
+        };
+
+        for entry in new_repos {
+            println!("{}", entry.name);
+            repos.push(entry);
+        }
+    }
+
 
     // println!("{:?}", repos);
     repos
