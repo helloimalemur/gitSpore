@@ -87,7 +87,7 @@ async fn main() {
             // pb.println(format!("[+] #{}/{}", int, user_repos.len()));
             // pb.inc(1);
         }
-        tokio::time::sleep(Duration::from_millis(300)).await;
+        // tokio::time::sleep(Duration::from_millis(300)).await;
     }
 
     // clean up handles
