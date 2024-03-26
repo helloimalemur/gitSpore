@@ -110,10 +110,7 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
     repos
 }
 
-pub fn download_repo(repo_url: String, output_path: String, token: String) -> JoinHandle<()> {
-    let repo_name = repo_url.split('/').last().unwrap();
-    let final_output_path = format!("{}{}/", output_path, repo_name);
-
+pub fn download_repo(repo_url: String, repo_name: String, final_output_path: String, token: String) -> JoinHandle<()> {
     let git_addr = repo_url.split("://").last().unwrap();
 
     let git_command = format!("https://oauth2:{}@{}", token, git_addr);
@@ -148,6 +145,39 @@ pub fn download_repo(repo_url: String, output_path: String, token: String) -> Jo
             println!("FAILURE: {:?}", result_string)
         } else {
             println!("SUCCESS: {:?}", final_output_path)
+        }
+    });
+    handle
+}
+
+pub fn update_repo(repo_path: String) -> JoinHandle<()> {
+    let handle = thread::spawn(move || {
+        let mut result_string = String::new();
+        let result = process::Command::new("git")
+            .arg("-C")
+            .arg(repo_path.clone())
+            .arg("pull")
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            // .spawn();
+            .spawn()
+            .unwrap();
+
+        let error = result
+            .stderr
+            .unwrap()
+            .read_to_string(&mut result_string)
+            .unwrap();
+        let _out = result
+            .stdout
+            .unwrap()
+            .read_to_string(&mut result_string)
+            .unwrap();
+
+        if error > 0 {
+            println!("FAILURE: {:?}", result_string)
+        } else {
+            println!("UPDATE SUCCESS: {:?}", repo_path)
         }
     });
     handle

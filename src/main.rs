@@ -2,13 +2,15 @@ extern crate core;
 
 use config::Config;
 use std::collections::HashMap;
-use std::env;
+use std::{env, process, thread};
+use std::path::Path;
+use std::process::Stdio;
 use std::thread::JoinHandle;
 use std::time::Duration;
 
 mod get_repos;
 use crate::get_repos::download_repo;
-use get_repos::get_repos;
+use get_repos::*;
 
 #[tokio::main]
 async fn main() {
@@ -68,14 +70,23 @@ async fn main() {
     // each repo, sleeping 1s between repo
     for (_int, repo) in user_repos.iter().enumerate() {
         // println!("{}", repo.clone().html_url);
-        let handle = download_repo(
-            String::from(repo.html_url.as_str()),
-            String::from(output),
-            String::from(token),
-        );
-        handles.push(handle);
-        // pb.println(format!("[+] #{}/{}", int, user_repos.len()));
-        // pb.inc(1);
+        let repo_name = repo.html_url.as_str().split('/').last().unwrap();
+        let final_output_path = format!("{}{}/", output, repo_name);
+
+        if Path::new(final_output_path.as_str()).exists() {
+            let handle = update_repo(final_output_path);
+            handles.push(handle);
+        } else {
+            let handle = download_repo(
+                String::from(repo.html_url.as_str()),
+                String::from(repo_name),
+                String::from(final_output_path),
+                String::from(token),
+            );
+            handles.push(handle);
+            // pb.println(format!("[+] #{}/{}", int, user_repos.len()));
+            // pb.inc(1);
+        }
         tokio::time::sleep(Duration::from_millis(300)).await;
     }
 
