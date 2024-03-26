@@ -111,6 +111,7 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
 }
 
 pub fn download_repo(repo_url: String, repo_name: String, final_output_path: String, token: String) -> JoinHandle<()> {
+    println!("Downloading: {:?}", final_output_path);
     let git_addr = repo_url.split("://").last().unwrap();
 
     let git_command = format!("https://oauth2:{}@{}", token, git_addr);
