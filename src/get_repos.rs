@@ -175,7 +175,7 @@ pub fn update_repo(repo_path: String) -> JoinHandle<()> {
             .unwrap();
 
         if error > 0 {
-            println!("UPDATE SUCCESS: {}", result_string.split('\n').last().unwrap())
+            println!("UPDATE SUCCESS: {}", result_string.split('\n').nth(1).unwrap())
         } else {
             println!("NO CHANGE: {:?}", repo_path)
         }
