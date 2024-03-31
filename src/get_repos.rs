@@ -1,3 +1,4 @@
+use anyhow::Error;
 use reqwest::header::HeaderMap;
 use serde::*;
 use std::io::Read;
@@ -28,7 +29,7 @@ impl RepoText for Repo {
     }
 }
 
-pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
+pub async fn get_repos(_user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
     // set gitsporest url
     let gitsporest_url = "https://api.github.com/user/repos?visibility=all".to_string();
     // println!("{}", gitsporest_url);
@@ -47,7 +48,7 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
     );
     headers.insert(
         reqwest::header::AUTHORIZATION,
-        reqwest::header::HeaderValue::from_bytes(auth_header.as_bytes()).unwrap(),
+        reqwest::header::HeaderValue::from_bytes(auth_header.as_bytes())?,
     );
 
     // println!("{:?}", headers);
@@ -83,9 +84,9 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
             let new_header = response
                 .headers()
                 .get("link")
-                .unwrap()
+                .expect("Could not parse HEADER")
                 .to_str()
-                .unwrap()
+                .expect("Could not parse HEADER")
                 .to_string();
             if check_header == new_header {
                 pagination = false;
@@ -115,7 +116,7 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
     }
 
     // println!("{:?}", repos);
-    repos
+    Ok(repos)
 }
 
 pub fn download_repo(

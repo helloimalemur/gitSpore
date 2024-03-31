@@ -15,6 +15,14 @@ pub struct Arguments {
     pub token: String,
 }
 
+pub fn load_from_clap() -> (String, String, String) {
+    let options = Arguments::parse();
+    let user = options.user.to_string();
+    let output = options.output_folder.to_string();
+    let token = options.token.to_string();
+    (user, output, token)
+}
+
 pub fn load_from_config_file(settings_map: &mut HashMap<String, String>) {
     let config = Config::builder()
         .add_source(config::File::with_name("config/Settings"))
