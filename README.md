@@ -1,6 +1,9 @@
 # gitSpore
 Github backup tool that concurrently downloads all public and private github repo's of the specified user.
 
+### Install from Crates.io
+    cargo install gitspore
+
 ## Running gitSpore from cli
     Usage: gitspore -u <USER> -o <OUTPUT_FOLDER> -t <TOKEN>
 
