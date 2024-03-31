@@ -14,3 +14,4 @@ serde_json = "1.0.108"
 config = {version = "0.13.1", features = ["json5"] }
 indicatif = "0.17.7"
 git2 = { version = "0.18.1", features = [] }
+clap = { version = "4.5.4", features = ["derive"] }

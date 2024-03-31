@@ -1,67 +1,45 @@
 extern crate core;
 
-use config::Config;
+
 use std::collections::HashMap;
-use std::{env, process, thread};
+use std::env;
 use std::path::Path;
-use std::process::Stdio;
 use std::thread::JoinHandle;
 use std::time::Duration;
+use clap::Parser;
 
 mod get_repos;
+mod options;
+
 use crate::get_repos::download_repo;
 use get_repos::*;
+use crate::options::{Arguments, load_from_config_file};
 
 #[tokio::main]
 async fn main() {
     let mut settings_map = HashMap::<String, String>::new();
 
+    let mut user = String::new();
+    let mut output = String::new();
+    let mut token = String::new();
+
     let args: Vec<String> = env::args().collect();
-    match args.len() {
-        4 => {
-            let user_arg = String::from(args.get(1).unwrap());
-            settings_map.insert("user".to_string(), user_arg.clone());
-            let output_path_arg = String::from(args.get(2).unwrap());
-            settings_map.insert("output".to_string(), output_path_arg.clone());
-            let github_token_arg = String::from(args.get(3).unwrap());
-            settings_map.insert("token".to_string(), github_token_arg.clone());
-        }
-        _ => load_from_config_file(&mut settings_map),
+
+    if args.len() > 1 && args.get(1).unwrap().eq_ignore_ascii_case("config-file") {
+        load_from_config_file(&mut settings_map);
+        user = settings_map.get("user").expect("invalid user argument").to_string();
+        output = settings_map.get("output").expect("invalid output argument").to_string();
+        token = settings_map.get("token").expect("invalid token argument").to_string();
+    } else {
+        let options = Arguments::parse();
+        user = options.user.to_string();
+        output = options.output_folder.to_string();
+        token = options.token.to_string();
     }
-
-    fn load_from_config_file(settings_map: &mut HashMap<String, String>) {
-        let config = Config::builder()
-            .add_source(config::File::with_name("config/Settings"))
-            .build()
-            .unwrap();
-        let config_map = config.try_deserialize::<HashMap<String, String>>().unwrap();
-
-        settings_map.insert(
-            "user".to_string(),
-            config_map.get("github_username").unwrap().to_string(),
-        );
-
-        settings_map.insert(
-            "output".to_string(),
-            config_map.get("output_folder").unwrap().to_string(),
-        );
-
-        settings_map.insert(
-            "token".to_string(),
-            config_map
-                .get("github_personal_access_token")
-                .unwrap()
-                .to_string(),
-        );
-    }
-
-    let user = settings_map.get("user").expect("invalid user argument");
-    let output = settings_map.get("output").expect("invalid output argument");
-    let token = settings_map.get("token").expect("invalid token argument");
 
     println!("User: {}\nOutput Path: {}\n", user, output);
 
-    let user_repos = get_repos(user, token).await;
+    let user_repos = get_repos(user.as_str(), token.as_str()).await;
 
     // let pb = indicatif::ProgressBar::new(user_repos.len() as u64);
 
@@ -81,7 +59,7 @@ async fn main() {
                 String::from(repo.html_url.as_str()),
                 String::from(repo_name),
                 String::from(final_output_path),
-                String::from(token),
+                String::from(&token),
             );
             handles.push(handle);
             // pb.println(format!("[+] #{}/{}", int, user_repos.len()));
