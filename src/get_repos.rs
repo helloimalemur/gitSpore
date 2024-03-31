@@ -4,10 +4,9 @@ use std::io::Read;
 use std::process::Stdio;
 use std::thread::JoinHandle;
 use std::{process, thread};
-use std::fmt::format;
 
 #[derive(Deserialize, Debug)]
-// struct to match on JSON reponse
+// struct to match on JSON response
 pub struct Repo {
     pub(crate) name: String,
     pub(crate) id: i32,
@@ -54,16 +53,20 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
     // println!("{:?}", headers);
 
     let mut pagination: bool = true;
+    #[allow(unused)]
     let mut git_url = String::new();
     let mut repos: Vec<Repo> = vec![];
     let mut page: i32 = 1;
+    #[allow(unused)]
     let mut check_header = String::new();
     git_url = String::from(&gitsporest_url);
 
-
     while pagination {
         // create reqwest client object
-        let client = match reqwest::Client::builder().default_headers(headers.clone()).build() {
+        let client = match reqwest::Client::builder()
+            .default_headers(headers.clone())
+            .build()
+        {
             Ok(k) => k,
             Err(_e) => std::process::exit(2),
         };
@@ -77,7 +80,13 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
         // println!("{:?}", response);
 
         if response.headers().contains_key("link") {
-            let new_header = response.headers().get("link").unwrap().to_str().unwrap().to_string();
+            let new_header = response
+                .headers()
+                .get("link")
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .to_string();
             if check_header == new_header {
                 pagination = false;
             }
@@ -105,12 +114,16 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Vec<Repo> {
         }
     }
 
-
     // println!("{:?}", repos);
     repos
 }
 
-pub fn download_repo(repo_url: String, repo_name: String, final_output_path: String, token: String) -> JoinHandle<()> {
+pub fn download_repo(
+    repo_url: String,
+    repo_name: String,
+    final_output_path: String,
+    token: String,
+) -> JoinHandle<()> {
     println!("Downloading: {:?}", final_output_path);
     let git_addr = repo_url.split("://").last().unwrap();
 

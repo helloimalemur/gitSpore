@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-use clap::{Parser, Subcommand};
+use clap::Parser;
 use config::Config;
+use std::collections::HashMap;
 
 #[derive(Parser)]
 pub struct Arguments {

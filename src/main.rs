@@ -1,35 +1,46 @@
 extern crate core;
 
-
+use clap::Parser;
 use std::collections::HashMap;
 use std::env;
 use std::path::Path;
 use std::thread::JoinHandle;
 use std::time::Duration;
-use clap::Parser;
 
 mod get_repos;
 mod options;
 
 use crate::get_repos::download_repo;
+use crate::options::{load_from_config_file, Arguments};
 use get_repos::*;
-use crate::options::{Arguments, load_from_config_file};
 
 #[tokio::main]
 async fn main() {
     let mut settings_map = HashMap::<String, String>::new();
 
+    #[allow(unused)]
     let mut user = String::new();
+    #[allow(unused)]
     let mut output = String::new();
+    #[allow(unused)]
     let mut token = String::new();
 
     let args: Vec<String> = env::args().collect();
 
     if args.len() > 1 && args.get(1).unwrap().eq_ignore_ascii_case("config-file") {
         load_from_config_file(&mut settings_map);
-        user = settings_map.get("user").expect("invalid user argument").to_string();
-        output = settings_map.get("output").expect("invalid output argument").to_string();
-        token = settings_map.get("token").expect("invalid token argument").to_string();
+        user = settings_map
+            .get("user")
+            .expect("invalid user argument")
+            .to_string();
+        output = settings_map
+            .get("output")
+            .expect("invalid output argument")
+            .to_string();
+        token = settings_map
+            .get("token")
+            .expect("invalid token argument")
+            .to_string();
     } else {
         let options = Arguments::parse();
         user = options.user.to_string();
@@ -46,7 +57,7 @@ async fn main() {
     let mut handles: Vec<JoinHandle<()>> = vec![];
 
     // each repo, sleeping 1s between repo
-    for (_int, repo) in user_repos.iter().enumerate() {
+    for repo in user_repos.iter() {
         // println!("{}", repo.clone().html_url);
         let repo_name = repo.html_url.as_str().split('/').last().unwrap();
         let final_output_path = format!("{}{}/", output, repo_name);
@@ -58,7 +69,7 @@ async fn main() {
             let handle = download_repo(
                 String::from(repo.html_url.as_str()),
                 String::from(repo_name),
-                String::from(final_output_path),
+                final_output_path,
                 String::from(&token),
             );
             handles.push(handle);
