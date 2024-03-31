@@ -1,7 +1,13 @@
 [package]
 name = "gitspore"
+description = "Github backup tool to concurrently download all public and private github repo's of the specified user."
 version = "0.2.0"
 edition = "2021"
+authors = ["james@koonts.net"]
+license = "MIT"
+repository = "https://github.com/helloimalemur/gitspore"
+keywords = ["github", "github-backup", "download-repo"]
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
