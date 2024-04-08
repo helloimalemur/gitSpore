@@ -1,5 +1,5 @@
 extern crate core;
-use anyhow::Error;
+use anyhow::{anyhow, Error};
 use std::collections::HashMap;
 use std::env;
 use std::path::Path;
@@ -99,6 +99,6 @@ async fn main() -> Result<(), Error> {
         }
         Ok(())
     } else {
-        Ok(())
+        Err(anyhow!("Error Downloading Repos"))
     }
 }
