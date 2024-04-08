@@ -6,9 +6,11 @@ use std::path::Path;
 use std::thread::JoinHandle;
 use std::time::Duration;
 
+mod dump_repos;
 mod get_repos;
 mod options;
 
+use crate::dump_repos::clone_all;
 use crate::get_repos::download_repo;
 use crate::options::{load_from_clap, load_from_config_file};
 use get_repos::*;
@@ -41,17 +43,24 @@ async fn main() -> Result<(), Error> {
             .to_string();
         output = settings_map
             .get("output")
-            .expect("invalid output argument")
+            .unwrap_or(&"./".to_string())
             .to_string();
         token = settings_map
             .get("token")
-            .expect("invalid token argument")
+            .unwrap_or(&"None".to_string())
             .to_string();
     } else {
         (user, output, token) = load_from_clap()
     }
 
     println!("User: {}\nOutput Path: {}\n", user, output);
+
+    if token.eq("None") {
+        let repos = dump_repos::dump_repos(user.clone()).await;
+        clone_all(user, &repos);
+        println!("Dump OK. \n{:#?}", repos);
+        return Ok(());
+    }
 
     if let Ok(user_repos) = get_repos(user.as_str(), token.as_str()).await {
         let mut handles: Vec<JoinHandle<()>> = vec![];

@@ -8,10 +8,10 @@ pub struct Arguments {
     #[clap(short)]
     pub user: String,
     /// folder to save github repo
-    #[clap(short)]
+    #[arg(short, long, default_value = "./")]
     pub output_folder: String,
     /// Github api token
-    #[clap(short)]
+    #[arg(short, long, default_value = "None")]
     pub token: String,
 }
 
