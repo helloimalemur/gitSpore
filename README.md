@@ -5,14 +5,13 @@ Github backup tool that concurrently downloads all public and private github rep
     cargo install gitspore
 
 ## Running gitSpore from cli
-    Usage: gitspore -u <USER> -o <OUTPUT_FOLDER> -t <TOKEN>
-
+    Usage: gitspore [OPTIONS] -u <USER>
+    
     Options:
     -u <USER>               Github username
-    -o <OUTPUT_FOLDER>      folder to save github repo
-    -t <TOKEN>              Github api token
+    -o <OUTPUT_FOLDER>      folder to save github repo [default: ./]
+    -t <TOKEN>              Github token - If no token is provided only the public repos will be downloaded [default: None]
     -h, --help              Print help
-
 
 ## Running gitSpore from config file
     Usage: gitspore config-file

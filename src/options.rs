@@ -10,7 +10,7 @@ pub struct Arguments {
     /// folder to save github repo
     #[clap(short, default_value="./")]
     pub output_folder: String,
-    /// Github api token
+    /// Github token - If no token is provided only the public repos will be downloaded.
     #[clap(short, default_value="None")]
     pub token: Option<String>,
 }
