@@ -1,5 +1,8 @@
 # gitSpore
-Github backup tool that concurrently downloads all public and private github repo's of the specified user.
+Github backup tool that concurrently downloads all repo's of the specified user.
+
+Note: If no token is provided only the public repo will be downloaded.
+
 
 ### Install from Crates.io
     cargo install gitspore
@@ -12,6 +15,12 @@ Github backup tool that concurrently downloads all public and private github rep
     -o <OUTPUT_FOLDER>      folder to save github repo [default: ./]
     -t <TOKEN>              Github token - If no token is provided only the public repos will be downloaded [default: None]
     -h, --help              Print help
+
+## Example CLI commands
+    ./gitSpore config-file # use config file
+    ./gitSpore -u helloimalemur # Download public repo only
+    ./gitSpore -u helloimalemur -t mytoken # Download public and private repo
+    ./gitSpore -u helloimalemur -t mytoken -o /tmp/output_dir # Download public and private repo to specified directory
 
 ## Running gitSpore from config file
     Usage: gitspore config-file
