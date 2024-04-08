@@ -29,10 +29,18 @@ impl RepoText for Repo {
     }
 }
 
-pub async fn get_repos(_user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
+pub async fn get_repos(user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
+    let mut gitsporest_url = String::new();
     // set gitsporest url
-    let gitsporest_url = "https://api.github.com/user/repos?visibility=all".to_string();
-    // println!("{}", gitsporest_url);
+
+    if auth_key.eq_ignore_ascii_case("none") {
+        println!("{}", "public!");
+        gitsporest_url = format!("https://api.github.com/users/{}/repos?visibility=all", user);
+    } else {
+        gitsporest_url = "https://api.github.com/user/repos?visibility=all".to_string();
+    }
+    println!("{}", gitsporest_url);
+    println!("{}", auth_key);
 
     let auth_header = format!("Bearer {}", auth_key);
 
@@ -46,10 +54,14 @@ pub async fn get_repos(_user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> 
         reqwest::header::ACCEPT,
         reqwest::header::HeaderValue::from_static("application/vnd.github+json"),
     );
-    headers.insert(
-        reqwest::header::AUTHORIZATION,
-        reqwest::header::HeaderValue::from_bytes(auth_header.as_bytes())?,
-    );
+
+    if !auth_key.eq_ignore_ascii_case("none") {
+        headers.insert(
+            reqwest::header::AUTHORIZATION,
+            reqwest::header::HeaderValue::from_bytes(auth_header.as_bytes())?,
+        );
+    }
+
 
     // println!("{:?}", headers);
 

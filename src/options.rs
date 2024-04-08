@@ -8,18 +8,23 @@ pub struct Arguments {
     #[clap(short)]
     pub user: String,
     /// folder to save github repo
-    #[clap(short)]
+    #[clap(short, default_value="./")]
     pub output_folder: String,
     /// Github api token
-    #[clap(short)]
-    pub token: String,
+    #[clap(short, default_value="None")]
+    pub token: Option<String>,
 }
 
 pub fn load_from_clap() -> (String, String, String) {
     let options = Arguments::parse();
     let user = options.user.to_string();
     let output = options.output_folder.to_string();
-    let token = options.token.to_string();
+    let mut token = String::new();
+    match options.token {
+        None => {token = "".to_string()}
+        Some(tk) => {token = tk}
+    }
+
     (user, output, token)
 }
 

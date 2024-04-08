@@ -43,10 +43,11 @@ async fn main() -> Result<(), Error> {
             .get("output")
             .expect("invalid output argument")
             .to_string();
-        token = settings_map
-            .get("token")
-            .expect("invalid token argument")
-            .to_string();
+        if let Some(tk) = settings_map.get("token") {
+            token = tk.to_string()
+        } else {
+            token = "".to_string()
+        }
     } else {
         (user, output, token) = load_from_clap()
     }
