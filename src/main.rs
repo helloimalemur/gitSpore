@@ -66,6 +66,10 @@ async fn main() -> Result<(), Error> {
                 .split('/')
                 .last()
                 .expect("Could not parse url");
+            if !output.ends_with('/') {
+                output.push('/')
+            }
+
             let final_output_path = format!("{}{}/", output, repo_name);
 
             if Path::new(final_output_path.as_str()).exists() {
