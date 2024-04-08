@@ -8,10 +8,10 @@ pub struct Arguments {
     #[clap(short)]
     pub user: String,
     /// folder to save github repo
-    #[clap(short, default_value="./")]
+    #[clap(short, default_value = "./")]
     pub output_folder: String,
     /// Github token - If no token is provided only the public repos will be downloaded.
-    #[clap(short, default_value="None")]
+    #[clap(short, default_value = "None")]
     pub token: Option<String>,
 }
 
@@ -19,10 +19,11 @@ pub fn load_from_clap() -> (String, String, String) {
     let options = Arguments::parse();
     let user = options.user.to_string();
     let output = options.output_folder.to_string();
+    #[allow(unused)]
     let mut token = String::new();
     match options.token {
-        None => {token = "".to_string()}
-        Some(tk) => {token = tk}
+        None => token = "".to_string(),
+        Some(tk) => token = tk,
     }
 
     (user, output, token)

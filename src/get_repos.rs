@@ -30,6 +30,7 @@ impl RepoText for Repo {
 }
 
 pub async fn get_repos(user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
+    #[allow(unused)]
     let mut gitsporest_url = String::new();
     // set gitsporest url
 
@@ -61,7 +62,6 @@ pub async fn get_repos(user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
             reqwest::header::HeaderValue::from_bytes(auth_header.as_bytes())?,
         );
     }
-
 
     // println!("{:?}", headers);
 
