@@ -97,28 +97,13 @@ pub async fn get_repos(user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
             println!("{header:?}");
             if let Ok(h) = header.to_str() {
                 if h.contains("next") && !h.contains("first")  {
-                    println!("add page");
                     page += 1;
                 } else {
-                    println!("page false innner");
                     pagination = false;
                 }
             } else {
-                println!("page false outter");
                 pagination = false;
             }
-            // let new_header = response
-            //     .headers()
-            //     .get("link")
-            //     .expect("Could not parse HEADER")
-            //     .to_str()
-            //     .expect("Could not parse HEADER")
-            //     .to_string();
-            // if check_header == new_header {
-            //     pagination = false;
-            // }
-            // check_header = new_header;
-            // page += 1;
             let page_param = format!("&page={}", page);
             git_url = format!("{gitsporest_url}{page_param}");
         } else {
