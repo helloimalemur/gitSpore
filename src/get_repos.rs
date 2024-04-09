@@ -94,7 +94,6 @@ pub async fn get_repos(user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
         // println!("{:?}", response);
 
         if let Some(header) = response.headers().get("link") {
-            println!("{header:?}");
             if let Ok(h) = header.to_str() {
                 if h.contains("next") && !h.contains("first")  {
                     page += 1;
