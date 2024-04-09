@@ -121,6 +121,8 @@ pub async fn get_repos(user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
             // page += 1;
             let page_param = format!("&page={}", page);
             git_url = format!("{gitsporest_url}{page_param}");
+        } else {
+            pagination = false
         }
 
         //handle response
