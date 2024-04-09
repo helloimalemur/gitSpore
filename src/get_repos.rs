@@ -5,6 +5,7 @@ use std::io::Read;
 use std::process::Stdio;
 use std::thread::JoinHandle;
 use std::{process, thread};
+use std::time::Duration;
 
 #[derive(Deserialize, Debug)]
 // struct to match on JSON response
@@ -92,21 +93,20 @@ pub async fn get_repos(user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
         };
         // println!("{:?}", response);
 
-        if response.headers().contains_key("link") {
-            let new_header = response
-                .headers()
-                .get("link")
-                .expect("Could not parse HEADER")
-                .to_str()
-                .expect("Could not parse HEADER")
-                .to_string();
-            if check_header == new_header {
+        if let Some(header) = response.headers().get("link") {
+            if let Ok(h) = header.to_str() {
+                if h.contains("next") && !h.contains("first")  {
+                    page += 1;
+                } else {
+                    pagination = false;
+                }
+            } else {
                 pagination = false;
             }
-            check_header = new_header;
-            page += 1;
             let page_param = format!("&page={}", page);
             git_url = format!("{gitsporest_url}{page_param}");
+        } else {
+            pagination = false
         }
 
         //handle response
@@ -125,8 +125,10 @@ pub async fn get_repos(user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
             println!("{}", entry.name);
             repos.push(entry);
         }
+        if auth_key.eq_ignore_ascii_case("none") {
+            tokio::time::sleep(Duration::from_millis(3000)).await;
+        }
     }
-
     // println!("{:?}", repos);
     Ok(repos)
 }
