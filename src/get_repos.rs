@@ -36,7 +36,7 @@ pub async fn get_repos(user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
     // set gitsporest url
 
     if auth_key.eq_ignore_ascii_case("none") {
-        println!("{}", "public!");
+        println!("public!");
         gitsporest_url = format!("https://api.github.com/users/{}/repos?visibility=all", user);
     } else {
         gitsporest_url = "https://api.github.com/user/repos?visibility=all".to_string();
