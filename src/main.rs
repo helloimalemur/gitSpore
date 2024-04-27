@@ -57,9 +57,8 @@ async fn main() -> Result<(), Error> {
     if let Ok(user_repos) = get_repos(user.as_str(), token.as_str()).await {
         let mut handles: Vec<JoinHandle<()>> = vec![];
 
-        // each repo, sleeping 1s between repo
+        // each repo, sleeping 100ms between repo
         for repo in user_repos.iter() {
-            // println!("{}", repo.clone().html_url);
             let repo_name = repo
                 .html_url
                 .as_str()
@@ -83,8 +82,6 @@ async fn main() -> Result<(), Error> {
                     String::from(&token),
                 );
                 handles.push(handle);
-                // pb.println(format!("[+] #{}/{}", int, user_repos.len()));
-                // pb.inc(1);
             }
             tokio::time::sleep(Duration::from_millis(100)).await;
         }
