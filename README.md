@@ -1,5 +1,6 @@
 # gitSpore
-Github backup tool that concurrently downloads all repo's of the specified user.
+Github mirroring and backup tool that concurrently downloads or updates all of the repo's of the specified user.
+If the repo already exists in the destination folder, that repo will be pulled on.
 
 Note: If no token is provided only the public repo will be downloaded.
 
