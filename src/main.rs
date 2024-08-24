@@ -88,7 +88,9 @@ async fn main() -> Result<(), Error> {
 
         // clean up handles
         for handle in handles {
-            handle.join().unwrap()
+            if let Err(_) = handle.join() {
+                println!("COULD NOT JOIN ON THREAD")
+            }
         }
         Ok(())
     } else {

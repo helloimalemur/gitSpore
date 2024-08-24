@@ -4,8 +4,8 @@ use serde::*;
 use std::io::Read;
 use std::process::Stdio;
 use std::thread::JoinHandle;
-use std::{process, thread};
 use std::time::Duration;
+use std::{process, thread};
 
 #[derive(Deserialize, Debug)]
 // struct to match on JSON response
@@ -95,7 +95,7 @@ pub async fn get_repos(user: &str, auth_key: &str) -> Result<Vec<Repo>, Error> {
 
         if let Some(header) = response.headers().get("link") {
             if let Ok(h) = header.to_str() {
-                if h.contains("next")  {
+                if h.contains("next") {
                     page += 1;
                 } else {
                     pagination = false;
@@ -181,33 +181,142 @@ pub fn download_repo(
 
 pub fn update_repo(repo_path: String) -> JoinHandle<()> {
     let handle = thread::spawn(move || {
-        let mut result_string = String::new();
-        let result = process::Command::new("git")
-            .arg("-C")
-            .arg(repo_path.clone())
-            .arg("pull")
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            // .spawn();
-            .spawn()
-            .unwrap();
+        let mut reset = false;
+        let mut pull = false;
+        let mut checkout = false;
+        
+        let _fetch = git_fetch(repo_path.clone());
+        let status = git_status(repo_path.clone());
+        
+        if status.is_empty() {
+            checkout = true;
+            reset = true;
+            pull = true;
+        }
 
-        let error = result
-            .stderr
-            .unwrap()
-            .read_to_string(&mut result_string)
-            .unwrap();
-        let _out = result
-            .stdout
-            .unwrap()
-            .read_to_string(&mut result_string)
-            .unwrap();
+        if !status.contains("On branch master") {
+            checkout = true
+        }
+        
+        if status.contains("Changes not staged for commit") {
+            reset = true;
+        }
 
-        if error > 0 {
-            println!("UPDATE SUCCESS: {}", repo_path)
+        if checkout {
+            git_checkout(repo_path.clone());
+            reset = true;
+            pull = true;
+        }
+
+        if reset {
+            git_reset(repo_path.clone());
+            pull = true;
+        }
+
+        if pull {
+            git_pull(repo_path.clone());
         } else {
             println!("NO CHANGE: {:?}", repo_path)
         }
     });
     handle
+}
+
+fn git_fetch(repo_path: String) -> String {
+    let mut fetch = String::new();
+    if let Ok(result) = process::Command::new("git")
+        .arg("-C")
+        .arg(repo_path.clone())
+        .arg("fetch")
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+    {
+        if let Some(mut res_stdout) = result.stdout {
+            let _ = res_stdout.read_to_string(&mut fetch);
+            // println!("{}", status);
+        }
+    } else { 
+        println!()
+    }
+    fetch
+}
+
+fn git_checkout(repo_path: String) -> String {
+    let mut checkout = String::new();
+    if let Ok(result) = process::Command::new("git")
+        .arg("-C")
+        .arg(repo_path.clone())
+        .arg("checkout")
+        .arg("master")
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+    {
+        if let Some(mut res_stdout) = result.stdout {
+            let _ = res_stdout.read_to_string(&mut checkout);
+            // println!("{}", status);
+        }
+    }
+    checkout
+}
+
+fn git_status(repo_path: String) -> String {
+    let mut status = String::new();
+    if let Ok(result) = process::Command::new("git")
+        .arg("-C")
+        .arg(repo_path.clone())
+        .arg("status")
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+    {
+        if let Some(mut res_stdout) = result.stdout {
+            let _ = res_stdout.read_to_string(&mut status);
+            // println!("{}", status);
+        }
+    }
+    status
+}
+
+fn git_reset(repo_path: String) {
+    let reset_result = process::Command::new("git")
+        .arg("-C")
+        .arg(repo_path.clone())
+        .arg("reset")
+        .arg("--hard")
+        .arg("HEAD")
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        // .spawn();
+        .spawn()
+        .unwrap();
+}
+
+fn git_pull(repo_path: String) {
+    let mut result_string = String::new();
+    let result = process::Command::new("git")
+        .arg("-C")
+        .arg(repo_path.clone())
+        .arg("pull")
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        // .spawn();
+        .spawn()
+        .unwrap();
+
+    let error = result
+        .stderr
+        .unwrap()
+        .read_to_string(&mut result_string)
+        .unwrap();
+    let _out = result
+        .stdout
+        .unwrap()
+        .read_to_string(&mut result_string)
+        .unwrap();
+
+    if error > 0 {
+        println!("UPDATE SUCCESS: {}", repo_path)
+    }
 }
