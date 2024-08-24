@@ -55,9 +55,9 @@ async fn main() -> Result<(), Error> {
     }
 
     println!("User: {}\nOutput Path: {}\n", user, output);
-    
+
     let mut handles: Vec<JoinHandle<()>> = vec![];
-    
+
     // let mut handles: Arc<Mutex<Vec<JoinHandle<()>>>> = Arc::new(Mutex::new(vec![]));
     // let mut handle_handle = handles.clone();
     // let mut handle_handle_2 = handles.clone();
@@ -100,17 +100,28 @@ async fn main() -> Result<(), Error> {
                 );
                 handles.push(handle);
             }
+            
+            // if handles.len() > 100 {
+            //     handles.iter_mut().for_each(|a| {a.join();});
+            //     // clean_up_handles(handles);
+            // } 
+            
             tokio::time::sleep(Duration::from_millis(100)).await;
         }
 
-        // clean up handles
-        // for handle in handles {
-        //     if let Err(_) = handle.join() {
-        //         println!("COULD NOT JOIN ON THREAD")
-        //     }
-        // }
+        clean_up_handles(handles);
         Ok(())
     } else {
         Err(anyhow!("Error Downloading Repos"))
+    }
+}
+
+
+fn clean_up_handles(handles: Vec<JoinHandle<()>>) {
+    // clean up handles
+    for handle in handles {
+        if let Err(_) = handle.join() {
+            println!("COULD NOT JOIN ON THREAD")
+        }
     }
 }
