@@ -1,8 +1,10 @@
 extern crate core;
 use anyhow::{anyhow, Error};
 use std::collections::HashMap;
-use std::env;
+use std::{env, thread};
+use std::ops::DerefMut;
 use std::path::Path;
+use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
 use std::time::Duration;
 
@@ -53,10 +55,25 @@ async fn main() -> Result<(), Error> {
     }
 
     println!("User: {}\nOutput Path: {}\n", user, output);
+    
+    let mut handles: Vec<JoinHandle<()>> = vec![];
+    
+    // let mut handles: Arc<Mutex<Vec<JoinHandle<()>>>> = Arc::new(Mutex::new(vec![]));
+    // let mut handle_handle = handles.clone();
+    // let mut handle_handle_2 = handles.clone();
+    // thread::spawn( move || {
+    //     loop {
+    //         if !handle_handle.lock().unwrap().is_empty() {
+    //             for i in handle_handle.lock().as_mut() {
+    //                 let _ = i.iter().take(1).map(JoinHandle::join);
+    //             }
+    //         }
+    //     }
+    // } );
 
     if let Ok(user_repos) = get_repos(user.as_str(), token.as_str()).await {
-        let mut handles: Vec<JoinHandle<()>> = vec![];
-
+        // let mut lock = handle_handle_2.lock();
+        // let handles_lock = lock.as_mut().unwrap();
         // each repo, sleeping 100ms between repo
         for repo in user_repos.iter() {
             let repo_name = repo
@@ -87,11 +104,11 @@ async fn main() -> Result<(), Error> {
         }
 
         // clean up handles
-        for handle in handles {
-            if let Err(_) = handle.join() {
-                println!("COULD NOT JOIN ON THREAD")
-            }
-        }
+        // for handle in handles {
+        //     if let Err(_) = handle.join() {
+        //         println!("COULD NOT JOIN ON THREAD")
+        //     }
+        // }
         Ok(())
     } else {
         Err(anyhow!("Error Downloading Repos"))
