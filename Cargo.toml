@@ -1,7 +1,7 @@
 [package]
 name = "gitspore"
-description = "Github backup tool to concurrently download all public and private github repo's of the specified user."
-version = "0.3.0"
+description = "Github mirroring and backup tool that concurrently downloads or updates all of the repo's of the specified user."
+version = "0.3.1"
 edition = "2021"
 authors = ["james@koonts.net"]
 license = "MIT"
