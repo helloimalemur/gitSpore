@@ -58,14 +58,21 @@ async fn main() -> Result<(), Error> {
 
 
     if let Ok(mut user_repos) = get_repos(user.as_str(), token.as_str()).await {
+        let mut trans = vec![];
+        let mut working = vec![];
 
         while !user_repos.is_empty() {
-            let mut working = vec![];
-            for _i in 0..12 {
-                working.push(user_repos.pop())
+            let mut handles: Vec<JoinHandle<()>> = trans;
+
+            if handles.len() < 30 && working.len() < 30 {
+                for _i in 0..5 {
+                    working.push(user_repos.pop())
+                }
             }
-            let mut handles: Vec<JoinHandle<()>> = vec![];
-            for r in working.iter() {
+
+            while !working.is_empty() {
+                let r = working.pop().unwrap();
+
                 if let Some(repo) = r.clone() {
                     let repo_name = repo
                         .html_url
@@ -92,11 +99,11 @@ async fn main() -> Result<(), Error> {
                         handles.push(handle);
                     }
 
-                    tokio::time::sleep(Duration::from_millis(100)).await;
+                    // tokio::time::sleep(Duration::from_millis(100)).await;
                 }
             }
 
-            clean_up_handles(handles);
+            trans = clean_up_handles(handles);
         }
         Ok(())
     } else {
@@ -104,11 +111,17 @@ async fn main() -> Result<(), Error> {
     }
 }
 
-fn clean_up_handles(handles: Vec<JoinHandle<()>>) {
+fn clean_up_handles(handles: Vec<JoinHandle<()>>) -> Vec<JoinHandle<()>> {
     // clean up handles
+    let mut res = vec![];
     for handle in handles {
-        if let Err(_) = handle.join() {
-            println!("COULD NOT JOIN ON THREAD")
+        // handle.join();
+        if !handle.is_finished() {
+            res.push(handle)
+        } else {
+            handle.join().unwrap()
         }
     }
+    // println!("handles handed off: {}", res.len());
+    res
 }
