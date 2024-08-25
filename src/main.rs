@@ -54,10 +54,10 @@ async fn main() -> Result<(), Error> {
         (user, output, token) = load_from_clap()
     }
 
-    println!("User: {}\nOutput Path: {}\n", user, output);
-
-
+    let mut total_repos = 0;
+    let mut work_count = 0;
     if let Ok(mut user_repos) = get_repos(user.as_str(), token.as_str()).await {
+        total_repos = user_repos.len();
         let mut trans = vec![];
         let mut working = vec![];
 
@@ -99,28 +99,32 @@ async fn main() -> Result<(), Error> {
                         handles.push(handle);
                     }
 
-                    // tokio::time::sleep(Duration::from_millis(100)).await;
+                    tokio::time::sleep(Duration::from_millis(100)).await;
                 }
             }
 
-            trans = clean_up_handles(handles);
+            trans = clean_up_handles(handles, &mut work_count);
         }
+        println!("User: {}\nOutput Path: {}\nTotal repos: {}/{}", user, output, work_count, total_repos);
         Ok(())
     } else {
         Err(anyhow!("Error Downloading Repos"))
     }
 }
 
-fn clean_up_handles(handles: Vec<JoinHandle<()>>) -> Vec<JoinHandle<()>> {
+fn clean_up_handles(handles: Vec<JoinHandle<()>>, mut work_count: &mut i32) -> Vec<JoinHandle<()>> {
     // clean up handles
     let mut res = vec![];
     for handle in handles {
-        // handle.join();
-        if !handle.is_finished() {
-            res.push(handle)
-        } else {
-            handle.join().unwrap()
-        }
+        *work_count += 1;
+        let _ = handle.join();
+
+        // if handle.is_finished() {
+        //     *work_count += 1;
+        //     handle.join().unwrap()
+        // } else {
+        //     res.push(handle)
+        // }
     }
     // println!("handles handed off: {}", res.len());
     res
