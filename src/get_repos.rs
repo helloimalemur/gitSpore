@@ -7,7 +7,7 @@ use std::thread::JoinHandle;
 use std::time::Duration;
 use std::{process, thread};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 // struct to match on JSON response
 pub struct Repo {
     pub(crate) name: String,
@@ -184,10 +184,10 @@ pub fn update_repo(repo_path: String) -> JoinHandle<()> {
         let mut reset = false;
         let mut pull = false;
         let mut checkout = false;
-        
+
         let _fetch = git_fetch(repo_path.clone());
         let status = git_status(repo_path.clone());
-        
+
         if status.is_empty() {
             checkout = true;
             reset = true;
@@ -197,7 +197,7 @@ pub fn update_repo(repo_path: String) -> JoinHandle<()> {
         if !status.contains("On branch master") {
             checkout = true
         }
-        
+
         if status.contains("Changes not staged for commit") {
             reset = true;
         }
@@ -236,7 +236,7 @@ fn git_fetch(repo_path: String) -> String {
             let _ = res_stdout.read_to_string(&mut fetch);
             // println!("{}", status);
         }
-    } else { 
+    } else {
         println!()
     }
     fetch
